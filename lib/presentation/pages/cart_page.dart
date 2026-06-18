@@ -15,11 +15,13 @@ class _CartPageState extends State<CartPage> {
   String _deliveryMethod = 'Kurir internal';
   String _paymentMethod = 'COD';
   final _customerController = TextEditingController(text: 'Pembeli GaluhMart');
+  final _blockController = TextEditingController();
   final _addressController = TextEditingController(text: 'Perum Kota Galuh');
 
   @override
   void dispose() {
     _customerController.dispose();
+    _blockController.dispose();
     _addressController.dispose();
     super.dispose();
   }
@@ -35,6 +37,14 @@ class _CartPageState extends State<CartPage> {
               padding: const EdgeInsets.all(16),
               children: [
                 TextField(controller: _customerController, decoration: const InputDecoration(labelText: 'Nama pembeli')),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: _blockController,
+                  decoration: const InputDecoration(
+                    labelText: 'Blok pengiriman',
+                    hintText: 'Contoh: Blok B2',
+                  ),
+                ),
                 const SizedBox(height: 12),
                 TextField(controller: _addressController, decoration: const InputDecoration(labelText: 'Alamat / catatan pengiriman')),
                 const SizedBox(height: 16),
@@ -90,6 +100,7 @@ class _CartPageState extends State<CartPage> {
       '',
       'Subtotal toko: ${_rupiah(items.fold(0, (total, item) => total + item.subtotal))}',
       'Nama: ${_customerController.text}',
+      'Blok pengiriman: ${_blockController.text.isEmpty ? '-' : _blockController.text}',
       'Alamat/catatan: ${_addressController.text}',
       'Pengiriman: $_deliveryMethod',
       'Pembayaran: $_paymentMethod',

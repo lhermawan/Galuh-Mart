@@ -6,7 +6,7 @@ void main() {
     await tester.pumpWidget(const GaluhMartApp());
 
     expect(find.text('GaluhMart'), findsOneWidget);
-    expect(find.text('Produk Lokal'), findsOneWidget);
+    expect(find.text('Katalog Toko & Jasa'), findsOneWidget);
     expect(find.text('Login Seller'), findsNothing);
   });
 }

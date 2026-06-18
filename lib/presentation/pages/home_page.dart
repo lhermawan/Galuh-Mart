@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../data/models/product.dart';
+import '../../data/models/shop.dart';
 import '../../data/repositories/marketplace_repository.dart';
 import '../controllers/cart_controller.dart';
-import '../widgets/product_card.dart';
 import '../widgets/section_header.dart';
 import 'auth_page.dart';
-import 'product_detail_page.dart';
+import 'seller_detail_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({
@@ -24,8 +23,8 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final categories = repository.getCategories();
-    final products = repository.getProducts();
-    final shop = repository.getFeaturedShop();
+    final shops = repository.getShops();
+    final featuredShop = repository.getFeaturedShop();
 
     return Scaffold(
       appBar: AppBar(
@@ -54,7 +53,7 @@ class HomePage extends StatelessWidget {
         children: [
           TextField(
             decoration: InputDecoration(
-              hintText: 'Cari makanan, minuman, jasa...',
+              hintText: 'Cari toko, penjual, atau penyedia jasa...',
               prefixIcon: const Icon(Icons.search),
               suffixIcon: IconButton(onPressed: () {}, icon: const Icon(Icons.tune)),
             ),
@@ -71,7 +70,7 @@ class HomePage extends StatelessWidget {
               children: [
                 Text('Marketplace UMKM Perum Kota Galuh', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w900)),
                 SizedBox(height: 8),
-                Text('Belanja produk tetangga, bayar via QRIS/COD, kirim dengan kurir lokal.', style: TextStyle(color: Colors.white70)),
+                Text('Pilih toko dulu, lihat poster produknya, lalu belanja di halaman penjual.', style: TextStyle(color: Colors.white70)),
               ],
             ),
           ),
@@ -93,40 +92,112 @@ class HomePage extends StatelessWidget {
           ),
           const SectionHeader(title: 'Toko Pilihan'),
           const SizedBox(height: 12),
-          Card(
-            child: ListTile(
-              leading: const CircleAvatar(child: Icon(Icons.storefront)),
-              title: Text(shop.name),
-              subtitle: Text('${shop.address}\n${shop.openHours} • ⭐ ${shop.rating}'),
-              isThreeLine: true,
-              trailing: const Icon(Icons.verified, color: Colors.teal),
-            ),
+          _ShopTile(
+            shop: featuredShop,
+            productCount: repository.getProductsByShop(featuredShop.name).length,
+            onTap: () => _openSeller(context, featuredShop),
           ),
           const SizedBox(height: 24),
-          const SectionHeader(title: 'Produk Lokal', action: 'Promo'),
+          const SectionHeader(title: 'Katalog Toko & Jasa', action: 'Buka toko'),
           const SizedBox(height: 12),
-          GridView.builder(
+          ListView.separated(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: products.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, childAspectRatio: .72, crossAxisSpacing: 12, mainAxisSpacing: 12),
-            itemBuilder: (context, index) => ProductCard(
-              product: products[index],
-              onTap: () => _openDetail(context, products[index]),
-              onAddToCart: () => _addToCart(context, products[index]),
-            ),
+            itemCount: shops.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 12),
+            itemBuilder: (context, index) {
+              final shop = shops[index];
+              return _ShopPosterCard(
+                shop: shop,
+                products: repository.getProductsByShop(shop.name).map((product) => product.name).toList(),
+                onTap: () => _openSeller(context, shop),
+              );
+            },
           ),
         ],
       ),
     );
   }
 
-  void _openDetail(BuildContext context, Product product) {
-    Navigator.of(context).push(MaterialPageRoute(builder: (_) => ProductDetailPage(product: product)));
+  void _openSeller(BuildContext context, Shop shop) {
+    Navigator.of(context).push(MaterialPageRoute(builder: (_) => SellerDetailPage(repository: repository, shop: shop)));
   }
+}
 
-  void _addToCart(BuildContext context, Product product) {
-    context.read<CartController>().add(product);
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${product.name} ditambahkan ke keranjang')));
+class _ShopTile extends StatelessWidget {
+  const _ShopTile({required this.shop, required this.productCount, required this.onTap});
+
+  final Shop shop;
+  final int productCount;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: ListTile(
+        onTap: onTap,
+        leading: const CircleAvatar(child: Icon(Icons.storefront)),
+        title: Text(shop.name),
+        subtitle: Text('${shop.address}\n${shop.openHours} • ⭐ ${shop.rating} • $productCount produk'),
+        isThreeLine: true,
+        trailing: const Icon(Icons.chevron_right),
+      ),
+    );
+  }
+}
+
+class _ShopPosterCard extends StatelessWidget {
+  const _ShopPosterCard({required this.shop, required this.products, required this.onTap});
+
+  final Shop shop;
+  final List<String> products;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(18),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(colors: [Color(shop.posterColor), Color(shop.posterColor).withOpacity(.68)]),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(shop.posterTitle, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900)),
+                  const SizedBox(height: 6),
+                  Text(products.join(' • '), maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white70)),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(14),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(shop.name, style: const TextStyle(fontWeight: FontWeight.w900)),
+                        const SizedBox(height: 4),
+                        Text('${shop.category} • ⭐ ${shop.rating}', style: Theme.of(context).textTheme.bodySmall),
+                      ],
+                    ),
+                  ),
+                  const Icon(Icons.chevron_right),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

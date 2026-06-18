@@ -13,6 +13,61 @@ class MarketplaceRepository {
         Category(id: 6, name: 'Sembako', icon: '🛒'),
       ];
 
+  List<Shop> getShops() => const [
+        Shop(
+          id: 1,
+          name: 'Dapur Bu Rina',
+          owner: 'Rina Kurnia',
+          category: 'Makanan rumahan',
+          address: 'Blok B2 No. 17, Perum Kota Galuh',
+          openHours: '06.00 - 21.00 WIB',
+          rating: 4.8,
+          isApproved: true,
+          posterTitle: 'Menu Sarapan & Bekal',
+          posterTagline: 'Nasi uduk, lauk harian, dan paket keluarga siap antar.',
+          posterColor: 0xFF0F766E,
+        ),
+        Shop(
+          id: 2,
+          name: 'Kopi Blok C',
+          owner: 'Arman Hakim',
+          category: 'Minuman',
+          address: 'Blok C1 No. 08, Perum Kota Galuh',
+          openHours: '09.00 - 22.00 WIB',
+          rating: 4.7,
+          isApproved: true,
+          posterTitle: 'Kopi & Minuman Segar',
+          posterTagline: 'Kopi susu gula aren, teh buah, dan minuman dingin harian.',
+          posterColor: 0xFF92400E,
+        ),
+        Shop(
+          id: 3,
+          name: 'Warung Pak Dedi',
+          owner: 'Dedi Santoso',
+          category: 'Sembako',
+          address: 'Blok A3 No. 11, Perum Kota Galuh',
+          openHours: '07.00 - 20.00 WIB',
+          rating: 4.9,
+          isApproved: true,
+          posterTitle: 'Sembako Komplet',
+          posterTagline: 'Paket hemat, kebutuhan dapur, dan stok bulanan warga.',
+          posterColor: 0xFF1D4ED8,
+        ),
+        Shop(
+          id: 4,
+          name: 'Galuh Craft',
+          owner: 'Maya Lestari',
+          category: 'Kerajinan & hadiah',
+          address: 'Blok D4 No. 05, Perum Kota Galuh',
+          openHours: '10.00 - 19.00 WIB',
+          rating: 4.6,
+          isApproved: true,
+          posterTitle: 'Hadiah Handmade',
+          posterTagline: 'Bucket flanel, hampers kecil, dan dekorasi custom.',
+          posterColor: 0xFFBE185D,
+        ),
+      ];
+
   List<Product> getProducts() => const [
         Product(
           id: 1,
@@ -27,6 +82,18 @@ class MarketplaceRepository {
           description: 'Nasi uduk rumahan lengkap dengan orek, telur, dan sambal kacang.',
         ),
         Product(
+          id: 5,
+          name: 'Ayam Geprek Sambal Ijo',
+          category: 'Makanan',
+          shopName: 'Dapur Bu Rina',
+          sellerWhatsApp: '628121110001',
+          price: 18000,
+          stock: 18,
+          rating: 4.8,
+          imageUrl: 'https://images.unsplash.com/photo-1627308595229-7830a5c91f9f?w=800',
+          description: 'Ayam geprek rumahan dengan nasi hangat dan sambal ijo segar.',
+        ),
+        Product(
           id: 2,
           name: 'Es Kopi Susu Tetangga',
           category: 'Minuman',
@@ -37,6 +104,18 @@ class MarketplaceRepository {
           rating: 4.7,
           imageUrl: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=800',
           description: 'Kopi susu gula aren segar, cocok untuk teman kerja dari rumah.',
+        ),
+        Product(
+          id: 6,
+          name: 'Lemon Tea Selasih',
+          category: 'Minuman',
+          shopName: 'Kopi Blok C',
+          sellerWhatsApp: '628121110002',
+          price: 10000,
+          stock: 32,
+          rating: 4.6,
+          imageUrl: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=800',
+          description: 'Lemon tea dingin dengan selasih, ringan untuk cuaca panas.',
         ),
         Product(
           id: 3,
@@ -51,6 +130,18 @@ class MarketplaceRepository {
           description: 'Beras, minyak, gula, dan telur untuk kebutuhan keluarga.',
         ),
         Product(
+          id: 7,
+          name: 'Telur Ayam 1 Kg',
+          category: 'Sembako',
+          shopName: 'Warung Pak Dedi',
+          sellerWhatsApp: '628121110003',
+          price: 28000,
+          stock: 20,
+          rating: 4.9,
+          imageUrl: 'https://images.unsplash.com/photo-1587486913049-53fc88980cfc?w=800',
+          description: 'Telur ayam segar kemasan 1 kg untuk kebutuhan harian.',
+        ),
+        Product(
           id: 4,
           name: 'Bucket Bunga Flanel',
           category: 'Kerajinan',
@@ -62,16 +153,23 @@ class MarketplaceRepository {
           imageUrl: 'https://images.unsplash.com/photo-1526047932273-341f2a7631f9?w=800',
           description: 'Kerajinan bunga flanel handmade untuk hadiah dan dekorasi.',
         ),
+        Product(
+          id: 8,
+          name: 'Hampers Mini Custom',
+          category: 'Kerajinan',
+          shopName: 'Galuh Craft',
+          sellerWhatsApp: '628121110004',
+          price: 65000,
+          stock: 6,
+          rating: 4.7,
+          imageUrl: 'https://images.unsplash.com/photo-1513201099705-a9746e1e201f?w=800',
+          description: 'Hampers mini untuk ucapan ulang tahun, wisuda, atau terima kasih.',
+        ),
       ];
 
-  Shop getFeaturedShop() => const Shop(
-        name: 'Dapur Bu Rina',
-        owner: 'Rina Kurnia',
-        address: 'Blok B2 No. 17, Perum Kota Galuh',
-        openHours: '06.00 - 21.00 WIB',
-        rating: 4.8,
-        isApproved: true,
-      );
+  List<Product> getProductsByShop(String shopName) => getProducts().where((product) => product.shopName == shopName).toList();
+
+  Shop getFeaturedShop() => getShops().first;
 
   List<LocalOrder> getOrders() => const [
         LocalOrder(

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../data/models/product.dart';
+import '../controllers/cart_controller.dart';
 
 class ProductDetailPage extends StatelessWidget {
   const ProductDetailPage({super.key, required this.product});
@@ -18,7 +20,7 @@ class ProductDetailPage extends StatelessWidget {
             children: [
               Expanded(child: OutlinedButton.icon(onPressed: () {}, icon: const Icon(Icons.chat_outlined), label: const Text('Chat Seller'))),
               const SizedBox(width: 12),
-              Expanded(child: FilledButton.icon(onPressed: () {}, icon: const Icon(Icons.add_shopping_cart), label: const Text('Keranjang'))),
+              Expanded(child: FilledButton.icon(onPressed: () => _addToCart(context), icon: const Icon(Icons.add_shopping_cart), label: const Text('Keranjang'))),
             ],
           ),
         ),
@@ -51,5 +53,10 @@ class ProductDetailPage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  void _addToCart(BuildContext context) {
+    context.read<CartController>().add(product);
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${product.name} ditambahkan ke keranjang')));
   }
 }

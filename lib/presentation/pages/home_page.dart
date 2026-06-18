@@ -1,15 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../data/models/product.dart';
 import '../../data/repositories/marketplace_repository.dart';
+import '../controllers/cart_controller.dart';
 import '../widgets/product_card.dart';
 import '../widgets/section_header.dart';
+import 'auth_page.dart';
 import 'product_detail_page.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key, required this.repository});
+  const HomePage({
+    super.key,
+    required this.repository,
+    required this.onLoginSelected,
+    required this.onCartSelected,
+  });
 
   final MarketplaceRepository repository;
+  final ValueChanged<DashboardRole> onLoginSelected;
+  final VoidCallback onCartSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -21,8 +31,22 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('GaluhMart'),
         actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.notifications_outlined)),
-          IconButton(onPressed: () {}, icon: const Icon(Icons.chat_bubble_outline)),
+          Consumer<CartController>(
+            builder: (context, cart, _) => Badge.count(
+              count: cart.itemCount,
+              isLabelVisible: cart.itemCount > 0,
+              child: IconButton(onPressed: onCartSelected, icon: const Icon(Icons.shopping_cart_outlined)),
+            ),
+          ),
+          PopupMenuButton<DashboardRole>(
+            tooltip: 'Login seller/admin',
+            icon: const Icon(Icons.login),
+            onSelected: onLoginSelected,
+            itemBuilder: (context) => const [
+              PopupMenuItem(value: DashboardRole.seller, child: Text('Login Seller')),
+              PopupMenuItem(value: DashboardRole.admin, child: Text('Login Admin')),
+            ],
+          ),
         ],
       ),
       body: ListView(
@@ -89,6 +113,7 @@ class HomePage extends StatelessWidget {
             itemBuilder: (context, index) => ProductCard(
               product: products[index],
               onTap: () => _openDetail(context, products[index]),
+              onAddToCart: () => _addToCart(context, products[index]),
             ),
           ),
         ],
@@ -98,5 +123,10 @@ class HomePage extends StatelessWidget {
 
   void _openDetail(BuildContext context, Product product) {
     Navigator.of(context).push(MaterialPageRoute(builder: (_) => ProductDetailPage(product: product)));
+  }
+
+  void _addToCart(BuildContext context, Product product) {
+    context.read<CartController>().add(product);
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${product.name} ditambahkan ke keranjang')));
   }
 }

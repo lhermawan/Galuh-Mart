@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import '../../data/models/product.dart';
 
 class ProductCard extends StatelessWidget {
-  const ProductCard({super.key, required this.product, required this.onTap});
+  const ProductCard({super.key, required this.product, required this.onTap, required this.onAddToCart});
 
   final Product product;
   final VoidCallback onTap;
+  final VoidCallback onAddToCart;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +36,12 @@ class ProductCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(product.shopName, style: Theme.of(context).textTheme.bodySmall),
                   const SizedBox(height: 8),
-                  Text('Rp${product.price}', style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w900)),
+                  Row(
+                    children: [
+                      Expanded(child: Text('Rp${product.price}', style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w900))),
+                      IconButton.filledTonal(onPressed: onAddToCart, icon: const Icon(Icons.add_shopping_cart), tooltip: 'Tambah ke keranjang'),
+                    ],
+                  ),
                 ],
               ),
             ),

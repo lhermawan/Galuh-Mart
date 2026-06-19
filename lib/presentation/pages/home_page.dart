@@ -134,13 +134,38 @@ class _ShopTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      child: ListTile(
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
         onTap: onTap,
-        leading: const CircleAvatar(child: Icon(Icons.storefront)),
-        title: Text(shop.name),
-        subtitle: Text('${shop.address}\n${shop.openHours} • ⭐ ${shop.rating} • $productCount produk'),
-        isThreeLine: true,
-        trailing: const Icon(Icons.chevron_right),
+        child: Row(
+          children: [
+            _ShopPosterImage(
+              imageUrl: shop.posterImageUrl,
+              color: Color(shop.posterColor),
+              width: 112,
+              height: 112,
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(14),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(shop.name, style: const TextStyle(fontWeight: FontWeight.w900)),
+                    const SizedBox(height: 6),
+                    Text(shop.address, maxLines: 2, overflow: TextOverflow.ellipsis),
+                    const SizedBox(height: 6),
+                    Text('${shop.openHours} • ⭐ ${shop.rating} • $productCount produk', style: Theme.of(context).textTheme.bodySmall),
+                  ],
+                ),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.only(right: 10),
+              child: Icon(Icons.chevron_right),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -164,16 +189,34 @@ class _ShopPosterCard extends StatelessWidget {
           children: [
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(18),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(colors: [Color(shop.posterColor), Color(shop.posterColor).withOpacity(.68)]),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              height: 178,
+              decoration: BoxDecoration(color: Color(shop.posterColor)),
+              child: Stack(
+                fit: StackFit.expand,
                 children: [
-                  Text(shop.posterTitle, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900)),
-                  const SizedBox(height: 6),
-                  Text(products.join(' • '), maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white70)),
+                  _ShopPosterImage(imageUrl: shop.posterImageUrl, color: Color(shop.posterColor)),
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [Colors.black.withOpacity(.08), Colors.black.withOpacity(.68)],
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    left: 18,
+                    right: 18,
+                    bottom: 18,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(shop.posterTitle, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900)),
+                        const SizedBox(height: 6),
+                        Text(products.join(' • '), maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white70)),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -197,6 +240,37 @@ class _ShopPosterCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _ShopPosterImage extends StatelessWidget {
+  const _ShopPosterImage({
+    required this.imageUrl,
+    required this.color,
+    this.width,
+    this.height,
+  });
+
+  final String imageUrl;
+  final Color color;
+  final double? width;
+  final double? height;
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.network(
+      imageUrl,
+      width: width,
+      height: height,
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) => Container(
+        width: width,
+        height: height,
+        color: color.withOpacity(.18),
+        alignment: Alignment.center,
+        child: Icon(Icons.storefront, color: color),
       ),
     );
   }

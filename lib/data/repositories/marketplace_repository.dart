@@ -25,6 +25,7 @@ class MarketplaceRepository {
           isApproved: true,
           posterTitle: 'Menu Sarapan & Bekal',
           posterTagline: 'Nasi uduk, lauk harian, dan paket keluarga siap antar.',
+          posterImageUrl: 'https://images.unsplash.com/photo-1512058564366-18510be2db19?w=1200',
           posterColor: 0xFF0F766E,
         ),
         Shop(
@@ -38,6 +39,7 @@ class MarketplaceRepository {
           isApproved: true,
           posterTitle: 'Kopi & Minuman Segar',
           posterTagline: 'Kopi susu gula aren, teh buah, dan minuman dingin harian.',
+          posterImageUrl: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=1200',
           posterColor: 0xFF92400E,
         ),
         Shop(
@@ -51,6 +53,7 @@ class MarketplaceRepository {
           isApproved: true,
           posterTitle: 'Sembako Komplet',
           posterTagline: 'Paket hemat, kebutuhan dapur, dan stok bulanan warga.',
+          posterImageUrl: 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=1200',
           posterColor: 0xFF1D4ED8,
         ),
         Shop(
@@ -64,6 +67,7 @@ class MarketplaceRepository {
           isApproved: true,
           posterTitle: 'Hadiah Handmade',
           posterTagline: 'Bucket flanel, hampers kecil, dan dekorasi custom.',
+          posterImageUrl: 'https://images.unsplash.com/photo-1526047932273-341f2a7631f9?w=1200',
           posterColor: 0xFFBE185D,
         ),
       ];

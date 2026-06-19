@@ -102,27 +102,55 @@ class _SellerPoster extends StatelessWidget {
     final productNames = products.map((product) => product.name).join(' • ');
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(28),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(shop.posterColor), Color(shop.posterColor).withOpacity(.72)],
-        ),
+        color: Color(shop.posterColor),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
         children: [
-          Text(shop.posterTitle, style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w900)),
-          const SizedBox(height: 8),
-          Text(shop.posterTagline, style: const TextStyle(color: Colors.white70, height: 1.4)),
-          const SizedBox(height: 18),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(color: Colors.white.withOpacity(.16), borderRadius: BorderRadius.circular(18)),
-            child: Text(productNames, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+          AspectRatio(
+            aspectRatio: 16 / 9,
+            child: Image.network(
+              shop.posterImageUrl,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => Container(
+                color: Color(shop.posterColor).withOpacity(.18),
+                alignment: Alignment.center,
+                child: const Icon(Icons.storefront, color: Colors.white, size: 54),
+              ),
+            ),
+          ),
+          Positioned.fill(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Colors.black.withOpacity(.05), Colors.black.withOpacity(.76)],
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            left: 20,
+            right: 20,
+            bottom: 20,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(shop.posterTitle, style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w900)),
+                const SizedBox(height: 8),
+                Text(shop.posterTagline, style: const TextStyle(color: Colors.white70, height: 1.4)),
+                const SizedBox(height: 18),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(color: Colors.white.withOpacity(.16), borderRadius: BorderRadius.circular(18)),
+                  child: Text(productNames, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+                ),
+              ],
+            ),
           ),
         ],
       ),

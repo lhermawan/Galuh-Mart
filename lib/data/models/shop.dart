@@ -10,6 +10,7 @@ class Shop {
     required this.isApproved,
     required this.posterTitle,
     required this.posterTagline,
+    required this.posterImageUrl,
     required this.posterColor,
   });
 
@@ -23,5 +24,6 @@ class Shop {
   final bool isApproved;
   final String posterTitle;
   final String posterTagline;
+  final String posterImageUrl;
   final int posterColor;
 }

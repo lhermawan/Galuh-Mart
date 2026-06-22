@@ -100,17 +100,28 @@ class HomePage extends StatelessWidget {
           const SizedBox(height: 24),
           const SectionHeader(title: 'Katalog Toko & Jasa', action: 'Buka toko'),
           const SizedBox(height: 12),
-          ListView.separated(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: shops.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 12),
-            itemBuilder: (context, index) {
-              final shop = shops[index];
-              return _ShopPosterCard(
-                shop: shop,
-                products: repository.getProductsByShop(shop.name).map((product) => product.name).toList(),
-                onTap: () => _openSeller(context, shop),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final crossAxisCount = constraints.maxWidth >= 720 ? 3 : 2;
+
+              return GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: shops.length,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: crossAxisCount,
+                  childAspectRatio: .58,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                ),
+                itemBuilder: (context, index) {
+                  final shop = shops[index];
+                  return _ShopPosterCard(
+                    shop: shop,
+                    products: repository.getProductsByShop(shop.name).map((product) => product.name).toList(),
+                    onTap: () => _openSeller(context, shop),
+                  );
+                },
               );
             },
           ),
@@ -155,7 +166,18 @@ class _ShopTile extends StatelessWidget {
                     const SizedBox(height: 6),
                     Text(shop.address, maxLines: 2, overflow: TextOverflow.ellipsis),
                     const SizedBox(height: 6),
-                    Text('${shop.openHours} • ⭐ ${shop.rating} • $productCount produk', style: Theme.of(context).textTheme.bodySmall),
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 6,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        _ShopStatusBadge(openHours: shop.openHours, compact: true),
+                        Text(
+                          '⭐ ${shop.rating} • $productCount produk',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
@@ -187,37 +209,49 @@ class _ShopPosterCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              width: double.infinity,
-              height: 178,
-              decoration: BoxDecoration(color: Color(shop.posterColor)),
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  _ShopPosterImage(imageUrl: shop.posterImageUrl, color: Color(shop.posterColor)),
-                  DecoratedBox(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [Colors.black.withOpacity(.08), Colors.black.withOpacity(.68)],
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(color: Color(shop.posterColor)),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    _ShopPosterImage(
+                      imageUrl: shop.posterImageUrl,
+                      color: Color(shop.posterColor),
+                    ),
+                    DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [Colors.black.withOpacity(.08), Colors.black.withOpacity(.68)],
+                        ),
                       ),
                     ),
-                  ),
-                  Positioned(
-                    left: 18,
-                    right: 18,
-                    bottom: 18,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(shop.posterTitle, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900)),
-                        const SizedBox(height: 6),
-                        Text(products.join(' • '), maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white70)),
-                      ],
+                    Positioned(
+                      left: 18,
+                      right: 18,
+                      bottom: 18,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            shop.posterTitle,
+                            style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            products.join(' • '),
+                            maxLines: 4,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(color: Colors.white70, height: 1.35),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             Padding(
@@ -230,7 +264,21 @@ class _ShopPosterCard extends StatelessWidget {
                       children: [
                         Text(shop.name, style: const TextStyle(fontWeight: FontWeight.w900)),
                         const SizedBox(height: 4),
-                        Text('${shop.category} • ⭐ ${shop.rating}', style: Theme.of(context).textTheme.bodySmall),
+                        Text(
+                          '${shop.category} • ⭐ ${shop.rating}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                        const SizedBox(height: 8),
+                        _ShopStatusBadge(openHours: shop.openHours),
+                        const SizedBox(height: 4),
+                        Text(
+                          shop.openHours,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
                       ],
                     ),
                   ),
@@ -242,6 +290,73 @@ class _ShopPosterCard extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _ShopStatusBadge extends StatelessWidget {
+  const _ShopStatusBadge({required this.openHours, this.compact = false});
+
+  final String openHours;
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) {
+    final isOpen = _ShopSchedule.isOpenNow(openHours);
+    final color = isOpen ? Colors.green.shade700 : Colors.red.shade700;
+    final backgroundColor = isOpen ? Colors.green.shade50 : Colors.red.shade50;
+
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: compact ? 8 : 10,
+        vertical: compact ? 4 : 6,
+      ),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: color.withOpacity(.24)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            isOpen ? Icons.storefront : Icons.storefront_outlined,
+            size: compact ? 13 : 15,
+            color: color,
+          ),
+          SizedBox(width: compact ? 4 : 6),
+          Text(
+            isOpen ? 'Buka' : 'Tutup',
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(color: color, fontWeight: FontWeight.w900),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ShopSchedule {
+  const _ShopSchedule._();
+
+  static bool isOpenNow(String openHours) {
+    final times = RegExp(r'(\d{2})\.(\d{2})').allMatches(openHours).toList();
+    if (times.length < 2) return false;
+
+    final now = DateTime.now();
+    final open = _minutes(times.first);
+    final close = _minutes(times[1]);
+    final current = now.hour * 60 + now.minute;
+
+    if (open <= close) {
+      return current >= open && current <= close;
+    }
+
+    return current >= open || current <= close;
+  }
+
+  static int _minutes(RegExpMatch match) {
+    final hour = int.parse(match.group(1)!);
+    final minute = int.parse(match.group(2)!);
+    return hour * 60 + minute;
   }
 }
 
